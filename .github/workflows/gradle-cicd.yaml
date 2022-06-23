@@ -42,10 +42,12 @@ jobs:
       - uses: actions/checkout@v3
       - uses: go-picky/picky-cicd/actions/gradle/validate@main
   Build:   # run build on creation of new tag
-    needs: Validate
+    needs: [Prepare, Validate]
     runs-on: ubuntu-latest
     container:
       image: gradle:7.4.2-jdk8
+    env:
+      TOKEN: ${{ needs.Prepare.outputs.token }}
     steps:
       - uses: actions/checkout@v3
       - uses: go-picky/picky-cicd/actions/gradle/build@main
