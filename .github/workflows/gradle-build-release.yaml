@@ -36,6 +36,8 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: gradle:7.4.2-jdk8
+    env:
+      TOKEN: ${{ needs.Prepare.outputs.token }}
     steps:
       - uses: actions/checkout@v3
       - uses: go-picky/picky-cicd/actions/gradle/validate@main
