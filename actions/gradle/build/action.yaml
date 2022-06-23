@@ -1,0 +1,24 @@
+---
+name: 'Gradle Build'
+description: 'Build the Java project using gradle'
+inputs:
+  name:
+    required: true
+    description: 'Name of the project which will be used to reference and name the output artifact'
+    type: string
+
+runs:
+  # Build:
+    # runs-on: ubuntu-latest
+    # container:
+    #   image: gradle:7.4.2-jdk8
+  using: 'composite'
+  steps:
+    - name: Building project
+      run: gradle ${{ inputs.name }}:build
+      shell: bash
+    - name: archive build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: build
+        path: ${{ inputs.name }}/build/libs/*.jar

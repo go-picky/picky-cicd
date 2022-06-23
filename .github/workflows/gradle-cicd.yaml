@@ -1,0 +1,52 @@
+---
+on:
+  workflow_call:
+    inputs:
+      name:
+        required: true
+        type: string
+      version:
+        required: false
+        type: string
+
+jobs:
+  Validate:
+    # environment: $ENV # to enable once secrets have been setup per environment
+    runs-on: ubuntu-latest
+    container:
+      image: gradle:7.4.2-jdk8
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/gradle/validate
+        with:
+          name: ${{ inputs.name }}
+  Build:   # run build on creation of new tag
+    needs: Validate
+    runs-on: ubuntu-latest
+    container:
+      image: gradle:7.4.2-jdk8
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/gradle/build
+        with:
+          name: ${{ inputs.name }}
+  Release:
+    needs: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/gradle/release
+        with:
+          name: ${{ inputs.name }}
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  Deploy:
+    needs: Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/aws/deploy
+        with:
+          name: ${{ inputs.name }}
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

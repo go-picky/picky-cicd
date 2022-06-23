@@ -1,0 +1,31 @@
+---
+name: 'Gradle Release'
+description: 'Build and release the gradle project'
+inputs:
+  name:
+    required: true
+    description: 'Name of the project which will be used name the docker image'
+    type: string
+  aws_access_key_id:
+    required: true
+    description: 'AWS access key ID'
+  aws_secret_access_key:
+    required: true
+    description: 'AWS secret access key'
+
+runs:
+  # Release:
+  using: 'composite'
+  steps:
+    - uses: actions/checkout@v3
+    - name: Download a single artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: build
+        path: ${{ inputs.name }}/build/libs/*.jar
+    - name: Releasing project
+      uses: ./.github/actions/docker/build-and-push
+      with:
+        name: ${{ inputs.name }}
+        aws_access_key_id: ${{ inputs.AWS_ACCESS_KEY_ID }}
+        aws_secret_access_key: ${{ inputs.AWS_SECRET_ACCESS_KEY }}
