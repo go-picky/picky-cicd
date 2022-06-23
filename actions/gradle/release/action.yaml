@@ -24,7 +24,7 @@ runs:
         name: build
         path: ./build/libs/*.jar
     - name: Releasing project
-      uses: go-picky/picky-cicd/actions/docker/build-and-push@task/gradle-build-release
+      uses: go-picky/picky-cicd/actions/docker/build-and-push@main
       with:
         name: ${{ inputs.name }}
         aws_access_key_id: ${{ inputs.AWS_ACCESS_KEY_ID }}

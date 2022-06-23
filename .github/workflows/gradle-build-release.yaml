@@ -16,7 +16,7 @@ jobs:
       image: gradle:7.4.2-jdk8
     steps:
       - uses: actions/checkout@v3
-      - uses: go-picky/picky-cicd/actions/gradle/validate@task/gradle-build-release
+      - uses: go-picky/picky-cicd/actions/gradle/validate@main
   Release:
     if: startsWith(github.ref, 'refs/tags/')
     needs: Validate
