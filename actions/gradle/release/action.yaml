@@ -22,9 +22,9 @@ runs:
       uses: actions/download-artifact@v3
       with:
         name: build
-        path: ${{ inputs.name }}/build/libs/*.jar
+        path: ./build/libs/*.jar
     - name: Releasing project
-      uses: ./actions/docker/build-and-push
+      uses: go-picky/picky-cicd/actions/docker/build-and-push@task/gradle-build-release
       with:
         name: ${{ inputs.name }}
         aws_access_key_id: ${{ inputs.AWS_ACCESS_KEY_ID }}

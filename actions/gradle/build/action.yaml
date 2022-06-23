@@ -8,17 +8,13 @@ inputs:
     type: string
 
 runs:
-  # Build:
-    # runs-on: ubuntu-latest
-    # container:
-    #   image: gradle:7.4.2-jdk8
   using: 'composite'
   steps:
     - name: Building project
-      run: gradle ${{ inputs.name }}:build
+      run: gradle build
       shell: bash
     - name: archive build artifacts
       uses: actions/upload-artifact@v3
       with:
         name: build
-        path: ${{ inputs.name }}/build/libs/*.jar
+        path: ./build/libs/*.jar

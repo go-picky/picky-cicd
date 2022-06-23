@@ -1,17 +1,16 @@
 ---
 name: 'Gradle Validate'
 description: 'Compile and test the Java project using gradle'
-inputs:
-  name:
-    required: true
-    description: 'Name of the project which will be used to reference the artifact'
-    type: string
+# inputs:
+#   name:
+#     required: true
+#     description: 'Name of the project which will be used to reference the artifact'
+#     type: string
 
 runs:
-  # Validate:
   using: 'composite'
   steps:
     - uses: actions/checkout@v3
     - name: Run tests
-      run: gradle ${{ inputs.name }}:test
+      run: gradle test
       shell: bash
