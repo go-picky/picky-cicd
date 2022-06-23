@@ -43,7 +43,7 @@ jobs:
       - uses: go-picky/picky-cicd/actions/gradle/validate@main
   Release:
     if: startsWith(github.ref, 'refs/tags/')
-    needs: Validate
+    needs: [Prepare, Validate]
     runs-on: ubuntu-latest
     container:
       image: gradle:7.4.2-jdk8
