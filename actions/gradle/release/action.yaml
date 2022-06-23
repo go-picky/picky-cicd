@@ -24,7 +24,7 @@ runs:
         name: build
         path: ${{ inputs.name }}/build/libs/*.jar
     - name: Releasing project
-      uses: ./.github/actions/docker/build-and-push
+      uses: ./actions/docker/build-and-push
       with:
         name: ${{ inputs.name }}
         aws_access_key_id: ${{ inputs.AWS_ACCESS_KEY_ID }}

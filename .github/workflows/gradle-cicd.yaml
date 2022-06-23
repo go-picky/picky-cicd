@@ -17,7 +17,7 @@ jobs:
       image: gradle:7.4.2-jdk8
     steps:
       - uses: actions/checkout@v3
-      - uses: ./.github/actions/gradle/validate
+      - uses: ./actions/gradle/validate
         with:
           name: ${{ inputs.name }}
   Build:   # run build on creation of new tag
@@ -27,7 +27,7 @@ jobs:
       image: gradle:7.4.2-jdk8
     steps:
       - uses: actions/checkout@v3
-      - uses: ./.github/actions/gradle/build
+      - uses: ./actions/gradle/build
         with:
           name: ${{ inputs.name }}
   Release:
@@ -35,7 +35,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: ./.github/actions/gradle/release
+      - uses: ./actions/gradle/release
         with:
           name: ${{ inputs.name }}
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -45,7 +45,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: ./.github/actions/aws/deploy
+      - uses: ./actions/aws/deploy
         with:
           name: ${{ inputs.name }}
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
