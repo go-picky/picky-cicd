@@ -10,16 +10,8 @@ on:
         type: string
 
 jobs:
-  Validate:
-    runs-on: ubuntu-latest
-    container:
-      image: gradle:7.4.2-jdk8
-    steps:
-      - uses: actions/checkout@v3
-      - uses: go-picky/picky-cicd/actions/gradle/validate@main
   Prepare:
     if: startsWith(github.ref, 'refs/tags/')
-    needs: Validate
     runs-on: ubuntu-latest
     outputs:
       token: ${{ steps.fetch-token.outputs.TOKEN }}
@@ -39,9 +31,17 @@ jobs:
           --output text \
           )
           echo "::set-output name=TOKEN::$TOKEN"
+  Validate:
+    needs: Prepare
+    runs-on: ubuntu-latest
+    container:
+      image: gradle:7.4.2-jdk8
+    steps:
+      - uses: actions/checkout@v3
+      - uses: go-picky/picky-cicd/actions/gradle/validate@main
   Release:
     if: startsWith(github.ref, 'refs/tags/')
-    needs: Prepare
+    needs: Validate
     runs-on: ubuntu-latest
     container:
       image: gradle:7.4.2-jdk8
