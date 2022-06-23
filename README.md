@@ -43,6 +43,9 @@ jobs:
             └── action.yaml
 ```
 
+1. Workflows for different types of projects e.g. Java, Node etc  - see [reusable workflows](https://docs.github.com/en/actions/using-workflows/reusing-workflows) for more information
+1. Actions which are referenced by the workflows - see [composite actions](https://docs.github.com/en/actions/creating-actions/creating-a-composite-action) for more information
+
 ## Considerations
 Currently the deploy stages are hardcoded to deploy to the development cluster of ECS and a placeholder registry on ECR.
 This will need to be changed once we are ready to use this CICD for production deploys or when we have a proper development envioronment for testing.
