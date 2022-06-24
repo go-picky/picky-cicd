@@ -31,11 +31,28 @@ jobs:
 Note: pick the workflow which is most suitable for the project. They can be found inside this repository under `.github/workflows/`
 
 
+The workflows require secrets in order to run and access all of the external services outside of GitHub.
+Secrets can be configured at the repository level under `https://github.com/{organisation}/{repository-name}/settings/secrets/actions`
+
+The required secrets are:
+
+Workflow:
+- gradle-build-and-release
+  - `AWS_ACCESS_KEY_ID`
+  - `AWS_DOMAIN` - domain that CodeArtifact is hosted on
+  - `AWS_SECRET_ACCESS_KEY`
+  - `CLUSTER_ARN` - identifier for ECS cluster
+- gradle-cicd
+  - `AWS_ACCESS_KEY_ID`
+  - `AWS_DOMAIN`
+  - `AWS_SECRET_ACCESS_KEY`
+
 ## Directory structure
 ```
 .
 ├── .github
 │   └── workflows                       (1)
+│       └── gradle-build-and-release.yaml
 │       └── gradle-cicd.yaml
 └── actions                             (2)
     ├── aws                             (3)
