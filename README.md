@@ -4,7 +4,6 @@ This repository contains the assets for Github actions which includes workflows 
 There are two types of workflows currently in this repository:
 - build-and-release - for building artifacts and uploading them to an AWS CodeArtifact repository.
 
-(Diagram to be added)
 ![Build and Release Diagram](./assets/build-and-release.png)
 
 - cicd - for creating a docker image, uploading it to AWS ECR and deploying it on AWS ECS
