@@ -1,6 +1,14 @@
 # Picky CICD
 This repository contains the assets for Github actions which includes workflows and actions which can be re-used by other projects.
 
+There are two types of workflows currently in this repository:
+- build-and-release - for building artifacts and uploading them to an AWS CodeArtifact repository.
+
+(Diagram to be added)
+![Build and Release Diagram]()
+
+- cicd - for creating a docker image, uploading it to AWS ECR and deploying it on AWS ECS
+
 ![CICD Diagram](./assets/cicd.png)
 
 ## How to use it
@@ -14,11 +22,13 @@ on: [push]
 
 jobs:
   cicd:
-    uses: go-picky/picky-microservices/.github/workflows/gradle-cicd.yaml
+    uses: go-picky/picky-microservices/.github/workflows/{workflow-name}.yaml
     with:
       name: {project-name}
     secrets: inherit
 ```
+
+Note: pick the workflow which is most suitable for the project. They can be found inside this repository under `.github/workflows/`
 
 
 ## Directory structure
@@ -28,23 +38,16 @@ jobs:
 │   └── workflows                       (1)
 │       └── gradle-cicd.yaml
 └── actions                             (2)
-    ├── aws
-    │   └── deploy
-    │       └── action.yaml
-    ├── docker
-    │   └── build-and-push
-    │       └── action.yaml
-    └── gradle
-        ├── build
-        │   └── action.yaml
-        ├── release
-        │   └── action.yaml
-        └── validate
-            └── action.yaml
+    ├── aws                             (3)
+    ├── docker                          (4)
+    └── gradle                          (5)
 ```
 
 1. Workflows for different types of projects e.g. Java, Node etc  - see [reusable workflows](https://docs.github.com/en/actions/using-workflows/reusing-workflows) for more information
 1. Actions which are referenced by the workflows - see [composite actions](https://docs.github.com/en/actions/creating-actions/creating-a-composite-action) for more information
+1. Actions related to AWS operations
+1. Actions related to Docker operations
+1. Actions related to Gradle operations
 
 ## Considerations
 Currently the deploy stages are hardcoded to deploy to the development cluster of ECS and a placeholder registry on ECR.
