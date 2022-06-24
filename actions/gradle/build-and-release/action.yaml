@@ -26,6 +26,7 @@ runs:
         gradle-version: 7.4.2
     - name: Execute Gradle build
       run: ./gradlew build
+      shell: bash
     - name: Releasing project
       uses: go-picky/picky-cicd/actions/docker/build-and-push@main
       with:
