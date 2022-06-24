@@ -41,24 +41,36 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: go-picky/picky-cicd/actions/gradle/validate@main
-  Build:   # run build on creation of new tag
+  # Build:   # run build on creation of new tag
+  #   needs: [Prepare, Validate]
+  #   runs-on: ubuntu-latest
+  #   container:
+  #     image: gradle:7.4.2-jdk8
+  #   env:
+  #     TOKEN: ${{ needs.Prepare.outputs.token }}
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - uses: go-picky/picky-cicd/actions/gradle/build@main
+  #       with:
+  #         name: ${{ inputs.name }}
+  # Release:
+  #   needs: Build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - uses: go-picky/picky-cicd/actions/gradle/release@main
+  #       with:
+  #         name: ${{ inputs.name }}
+  #         aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #         aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  BuildAndRelease:
     needs: [Prepare, Validate]
     runs-on: ubuntu-latest
-    container:
-      image: gradle:7.4.2-jdk8
     env:
       TOKEN: ${{ needs.Prepare.outputs.token }}
     steps:
       - uses: actions/checkout@v3
-      - uses: go-picky/picky-cicd/actions/gradle/build@main
-        with:
-          name: ${{ inputs.name }}
-  Release:
-    needs: Build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: go-picky/picky-cicd/actions/gradle/release@main
+      - uses: go-picky/picky-cicd/actions/gradle/build-and-release@main
         with:
           name: ${{ inputs.name }}
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
