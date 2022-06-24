@@ -73,7 +73,3 @@ This will need to be changed once we are ready to use this CICD for production d
 
 ### Upload Limits
 Github imposes an upload limit on the output artifacts for jobs. As a workaround, the the build and release jobs have been combined into one stage. This should be more gracefully moving forward.
-
-#### Changes Required before going to production:
-
-TBC
