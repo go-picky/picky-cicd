@@ -50,8 +50,13 @@ Note: pick the workflow which is most suitable for the project. They can be foun
 1. Actions related to Gradle operations
 
 ## Considerations
+
+### Cluster URL
 Currently the deploy stages are hardcoded to deploy to the development cluster of ECS and a placeholder registry on ECR.
 This will need to be changed once we are ready to use this CICD for production deploys or when we have a proper development envioronment for testing.
+
+### Upload Limits
+Github imposes an upload limit on the output artifacts for jobs. As a workaround, the the build and release jobs have been combined into one stage. This should be more gracefully moving forward.
 
 #### Changes Required before going to production:
 

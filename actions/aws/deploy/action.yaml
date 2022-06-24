@@ -16,6 +16,9 @@ inputs:
   aws_secret_access_key:
     required: true
     description: 'AWS secret access key'
+  cluster_arn:
+    required: true
+    description: 'ARN of the AWS ECS cluster'
 
 runs:
   using: 'composite'
@@ -31,5 +34,5 @@ runs:
     - name: Register task definitions and deploy to service
       run: |
         aws ecs register-task-definition --cli-input-yaml file://ecs/${{ inputs.name }}-task-def.yaml
-        aws ecs update-service --cluster arn:aws:ecs:ap-southeast-1:704871211513:cluster/picky-ecs-development-cluster --service ${{ inputs.name }} --task-definition ${{ inputs.name }}-task-def
+        aws ecs update-service --cluster ${{ inputs.cluster_arn }} --service ${{ inputs.name }} --task-definition ${{ inputs.name }}-task-def
       shell: bash
