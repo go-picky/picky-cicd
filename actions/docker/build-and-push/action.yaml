@@ -10,6 +10,7 @@ inputs:
     required: false
     description: 'Version used to tag the docker image'
     type: string
+    default: latest
   aws_access_key_id:
     required: true
     description: 'AWS access key ID'
@@ -37,7 +38,7 @@ runs:
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: ${{ inputs.name }}-test # remove '-test' once confirmed working
-        IMAGE_TAG: latest
+        IMAGE_TAG: ${{ inputs.version }}
       run: |
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
