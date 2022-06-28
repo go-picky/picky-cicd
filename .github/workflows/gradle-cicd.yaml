@@ -63,6 +63,10 @@ jobs:
   #         name: ${{ inputs.name }}
   #         aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
   #         aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+  # Build and Release combined:
+  # Workaround for https://github.com/actions/upload-artifact upload quota
+  # Skips artifact upload to github
   BuildAndRelease:
     needs: [Prepare, Validate]
     runs-on: ubuntu-latest
