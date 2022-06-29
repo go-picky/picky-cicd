@@ -6,6 +6,10 @@ inputs:
     required: true
     description: 'Name of the project which will be used name the docker image'
     type: string
+  version:
+    required: false
+    description: 'Version of the project which will be used tag the docker image'
+    type: string
   aws_access_key_id:
     required: true
     description: 'AWS access key ID'
@@ -31,5 +35,6 @@ runs:
       uses: go-picky/picky-cicd/actions/docker/build-and-push@main
       with:
         name: ${{ inputs.name }}
+        version: ${{ inputs.version }}
         aws_access_key_id: ${{ inputs.AWS_ACCESS_KEY_ID }}
         aws_secret_access_key: ${{ inputs.AWS_SECRET_ACCESS_KEY }}
