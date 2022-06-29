@@ -40,7 +40,15 @@ jobs:
       TOKEN: ${{ needs.Prepare.outputs.token }}
     steps:
       - uses: actions/checkout@v3
+      - run: git config --global --add safe.directory /__w/${{ inputs.name }}/${{ inputs.name }}
       - uses: go-picky/picky-cicd/actions/gradle/validate@main
+      - name: Test Report
+        uses: dorny/test-reporter@v1
+        if: success() || failure()    # run this step even if previous step failed
+        with:
+          name: JUnit Tests            # Name of the check run which will be created
+          path: build/test-results/test/*.xml    # Path to test results
+          reporter: java-junit        # Format of test results
   # Build:   # run build on creation of new tag
   #   needs: [Prepare, Validate]
   #   runs-on: ubuntu-latest
