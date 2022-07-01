@@ -1,0 +1,39 @@
+---
+on:
+  workflow_call:
+    inputs:
+      name:
+        required: true
+        type: string
+      version:
+        required: false
+        type: string
+
+jobs:
+  Validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+  BuildAndRelease:
+    needs: Validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set env
+        run: echo "RELEASE_VERSION=$(echo ${GITHUB_REF#refs/*/} | sed 's/[^0-9^\.]*//g')" >> $GITHUB_ENV
+      - uses: go-picky/picky-cicd/actions/docker/build-and-push@main
+        with:
+          name: ${{ inputs.name }}
+          version: ${{ env.RELEASE_VERSION }}
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  Deploy:
+    needs: BuildAndRelease
+    runs-on: ubuntu-latest
+    steps:
+      - uses: go-picky/picky-cicd/actions/aws/deploy@main
+        with:
+          name: ${{ inputs.name }}
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          cluster_arn: ${{ secrets.CLUSTER_ARN }}
