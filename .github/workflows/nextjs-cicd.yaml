@@ -18,7 +18,7 @@ jobs:
     needs: Validate
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
       - name: Set env
         run: echo "RELEASE_VERSION=$(echo ${GITHUB_REF#refs/*/} | sed 's/[^0-9^\.]*//g')" >> $GITHUB_ENV
       - uses: go-picky/picky-cicd/actions/gradle/build-and-release@main
