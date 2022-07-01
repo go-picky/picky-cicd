@@ -1,0 +1,73 @@
+---
+on:
+  workflow_call:
+    inputs:
+      name:
+        required: true
+        type: string
+      version:
+        required: false
+        type: string
+      python-version:
+        required: false
+        type: string
+        default: 3.10.4
+
+
+jobs:
+  Prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      token: ${{ steps.fetch-token.outputs.TOKEN }}
+    steps:
+      - id: fetch-token
+        uses: go-picky/picky-cicd/actions/aws/fetch-code-artifact-token@main
+        with:
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_domain: ${{ secrets.AWS_DOMAIN }}
+  Validate:
+    needs: Prepare
+    runs-on: ubuntu-latest
+    env:
+      TOKEN: ${{ needs.Prepare.outputs.token }}
+    steps:
+      - uses: actions/checkout@v3
+      # Marks directory as safe to perform git operations - https://github.blog/2022-04-12-git-security-vulnerability-announced/
+      - run: git config --global --add safe.directory /__w/${{ inputs.name }}/${{ inputs.name }}
+      - uses: go-picky/picky-cicd/actions/python/validate@main
+        with:
+          python-version: ${{ inputs.python-version }}
+  Build:
+    needs: [Prepare, Validate]
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo Build Stage - placeholder
+  Release:
+    needs: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: go-picky/picky-cicd/actions/git/get-version@main
+      - uses: go-picky/picky-cicd/actions/python/build@main
+        with:
+          python-version: ${{ inputs.python-version }}
+      - name: Releasing project
+        uses: go-picky/picky-cicd/actions/docker/build-and-push@main
+        with:
+          name: ${{ inputs.name }}
+          version: ${{ env.RELEASE_VERSION }}
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          git_token: ${{ secrets.GIT_TOKEN }}
+  Deploy:
+    needs: Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: go-picky/picky-cicd/actions/aws/deploy@main
+        with:
+          name: ${{ inputs.name }}
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          cluster_arn: ${{ secrets.CLUSTER_ARN }}

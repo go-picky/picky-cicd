@@ -1,0 +1,40 @@
+---
+name: 'Gradle Validate'
+description: 'Compile and test the Java project using gradle'
+
+inputs:
+  python-version:
+    required: true
+    description: 'python version'
+    type: string
+
+runs:
+  using: 'composite'
+  steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python ${{ inputs.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ inputs.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      shell: bash
+    - name: Run tests
+      run: if [ -d tests ]; then pytest --junitxml=reports/output.xml; fi
+      shell: bash
+    - name: Check report exists
+      if: success() || failure()
+      id: check_files
+      uses: andstor/file-existence-action@v1
+      with:
+        files: "reports/output.xml"
+    - name: Test Report
+      uses: dorny/test-reporter@v1
+      if: steps.check_files.outputs.files_exists == 'true'
+      with:
+        name: JUnit Tests
+        path: reports/*.xml    # Path to test results - TODO: configure path for python tests
+        reporter: java-junit

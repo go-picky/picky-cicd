@@ -46,6 +46,42 @@ Workflow:
   - `AWS_DOMAIN`
   - `AWS_SECRET_ACCESS_KEY`
 
+
+## AWS ECS
+Projects using the [AWS deploy action](https://github.com/go-picky/picky-cicd/blob/main/actions/aws/deploy/action.yaml) expects a task definition file defined at the path: `ecs/{development|production}.task-def.yaml`. The content can be defined using the following task definition template:
+```yaml
+# Abstract the values into a template
+executionRoleArn: arn:aws:iam::{account_id}:role/{role_name}
+containerDefinitions:
+  - name: media-service-container
+    image: {account_id}.dkr.ecr.{region}.amazonaws.com/{image_name}
+    environment:
+      - name: CONFIG_PATH
+        value: config/development.toml
+    cpu: 0
+    portMappings:
+      - containerPort: 8080
+        hostPort: 8080
+        protocol: tcp
+    essential: true
+    logConfiguration:
+      logDriver: awslogs
+      options:
+        awslogs-group: /ecs/{task_definition_name}
+        awslogs-region: {region}
+        awslogs-stream-prefix: ecs
+family: {task_definition_name}
+taskRoleArn: arn:aws:iam::{account_id}:role/{role_name}
+networkMode: awsvpc
+runtimePlatform:
+  operatingSystemFamily: LINUX
+requiresCompatibilities:
+  - EC2
+  - FARGATE
+cpu: 512
+memory: 1024
+```
+
 ## Directory structure
 ```
 .

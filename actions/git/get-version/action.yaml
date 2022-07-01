@@ -1,0 +1,23 @@
+---
+name: 'Get version number'
+description: 'Get version number from Git tag'
+
+# outputs:
+#   token: ${{ steps.fetch-token.outputs.TOKEN }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Set env
+      run: echo "RELEASE_VERSION=$(echo ${GITHUB_REF#refs/*/} | sed 's/[^0-9^\.]*//g')" >> $GITHUB_ENV
+      shell: bash
+    - name: Check value exists - set latest for default
+      run: echo "RELEASE_VERSION=${RELEASE_VERSION:-latest}" >> $GITHUB_ENV
+      shell: bash
+    - name: Print version
+      run: echo version $RELEASE_VERSION
+      shell: bash
+    # - name: Set env
+    #   run: |
+    #       echo "RELEASE_VERSION=$(echo ${GITHUB_REF#refs/*/} | sed 's/[^0-9^\.]*//g')" >> $GITHUB_ENV
+    #       echo "::set-output name=RELEASE_VERSION::$RELEASE_VERSION"

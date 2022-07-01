@@ -17,6 +17,9 @@ inputs:
   aws_secret_access_key:
     required: true
     description: 'AWS secret access key'
+  git_token:
+    required: false
+    description: 'Git access token'
 
 runs:
   using: 'composite'
@@ -34,13 +37,27 @@ runs:
     - name: Login to Amazon ECR
       id: login-ecr
       uses: aws-actions/amazon-ecr-login@v1
+    - name: Create ECR Repository if not exists
+      env:
+        ECR_REPOSITORY: ${{ inputs.name }}-test # remove '-test' once confirmed working
+      run: aws ecr describe-repositories --repository-names ${ECR_REPOSITORY} || aws ecr create-repository --repository-name ${ECR_REPOSITORY}
+      shell: bash
     - name: Build, tag, and push image to Amazon ECR
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: ${{ inputs.name }} # remove '-test' once confirmed working
         IMAGE_TAG: ${{ inputs.version || 'latest' }}
+        GIT_TOKEN: ${{ inputs.git_token }}
       run: |
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        if [[ $GIT_TOKEN ]]
+        then
+          echo Setting git token
+          # echo "ARGS=\"--build-arg GIT_TOKEN=${GIT_TOKEN}\"" >> $GITHUB_ENV
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG . --build-arg GIT_TOKEN=$GIT_TOKEN
+        else
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG . $ARGS
+        fi
+
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
       shell: bash

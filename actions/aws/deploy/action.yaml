@@ -22,7 +22,6 @@ inputs:
 
 runs:
   using: 'composite'
-  # Deploy:
   steps:
     - uses: actions/checkout@v3
     - name: Configure AWS credentials
@@ -31,10 +30,25 @@ runs:
         aws-access-key-id: ${{ inputs.aws_access_key_id }}
         aws-secret-access-key: ${{ inputs.aws_secret_access_key }}
         aws-region: ap-southeast-1
-    - name: Register task definitions and deploy to service
+    # - name: Create service if not exists
+    #   env:
+    #     ENV: development
+    #   run: |
+    #     aws ecs describe-services --cluster ${{ inputs.cluster_arn }} --services ${{ inputs.name }} | grep ACTIVE || \
+    #     aws ecs create-service \
+    #       --cluster ${{ inputs.cluster_arn }} \
+    #       --service-name ${{ inputs.name }} \
+    #       --desired-count 1 \
+    #       --launch-type FARGATE
+    #       --task-definition ${{ inputs.name }}-task-def-test
+      # shell: bash
+    - name: Register task definitions if different
       env:
         ENV: development
-      run: |
-        aws ecs register-task-definition --cli-input-yaml file://ecs/$ENV-${{ inputs.name }}-task-def.yaml
-        aws ecs update-service --cluster ${{ inputs.cluster_arn }} --service ${{ inputs.name }} --task-definition ${{ inputs.name }}-task-def
+      run: aws ecs register-task-definition --cli-input-yaml file://ecs/$ENV-task-def.yaml
+      shell: bash
+    - name: Update service
+      env:
+        ENV: development
+      run: aws ecs update-service --cluster ${{ inputs.cluster_arn }} --service ${{ inputs.name }} --task-definition ${{ inputs.name }}-task-def-test
       shell: bash
