@@ -1,0 +1,37 @@
+---
+name: 'Yarn Validate'
+description: 'Compile and test the Java project using gradle'
+
+inputs:
+  node-version:
+    required: true
+    description: 'node version'
+    type: string
+
+runs:
+  using: 'composite'
+  steps:
+    - uses: actions/checkout@v3
+    - name: Set up node ${{ inputs.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ inputs.node-version }}
+    - name: Install dependencies
+      run: yarn install
+      shell: bash
+    - name: Run tests
+      run: if [ -f test-results.xml ]; then yarn test; fi
+      shell: bash
+    - name: Check report exists
+      if: success() || failure()
+      id: check_files
+      uses: andstor/file-existence-action@v1
+      with:
+        files: "test-results.xml"
+    - name: Test Report
+      uses: dorny/test-reporter@v1
+      if: steps.check_files.outputs.files_exists == 'true'
+      with:
+        name: Jest Tests
+        path: test-results.xml    # Path to test results - TODO: configure path for python tests
+        reporter: jest-junit

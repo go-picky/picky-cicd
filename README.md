@@ -11,7 +11,7 @@ There are two types of workflows currently in this repository:
 ![CICD Diagram](./assets/cicd.png)
 
 ## How to use it
-To use a CICD workflow inside your own project, add the following directories and file inside your project at the root path: `.github/workflows/cicd.yml`
+To use a CICD workflow inside your own project, add the following directories and file inside your project at the root path: `.github/workflows/cicd.yaml`
 
 ```yaml
 ---

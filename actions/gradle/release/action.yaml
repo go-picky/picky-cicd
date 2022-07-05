@@ -1,31 +1,20 @@
 ---
-name: 'Gradle Release'
-description: 'Build and release the docker image'
+name: 'Gradle Build'
+description: 'Build the Java project using gradle'
 inputs:
   name:
     required: true
-    description: 'Name of the project which will be used name the docker image'
+    description: 'Name of the project which will be used to reference and name the output artifact'
     type: string
-  aws_access_key_id:
-    required: true
-    description: 'AWS access key ID'
-  aws_secret_access_key:
-    required: true
-    description: 'AWS secret access key'
 
 runs:
-  # Release:
   using: 'composite'
   steps:
-    - uses: actions/checkout@v3
-    - name: Download a single artifact
-      uses: actions/download-artifact@v3
+    - name: Building project
+      run: gradle build
+      shell: bash
+    - name: archive build artifacts
+      uses: actions/upload-artifact@v3
       with:
         name: build
         path: ./build/libs/*.jar
-    - name: Releasing project
-      uses: go-picky/picky-cicd/actions/docker/build-and-push@main
-      with:
-        name: ${{ inputs.name }}
-        aws_access_key_id: ${{ inputs.AWS_ACCESS_KEY_ID }}
-        aws_secret_access_key: ${{ inputs.AWS_SECRET_ACCESS_KEY }}

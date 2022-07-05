@@ -1,0 +1,29 @@
+---
+name: 'Build JavaScript App'
+description: 'Install dependencies for JavaScript app using Yarn'
+inputs:
+  node-version:
+    required: true
+    description: 'node version'
+    type: string
+
+runs:
+  using: 'composite'
+  steps:
+    - uses: actions/checkout@v3
+    - name: Set up node ${{ inputs.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ inputs.node-version }}
+    - name: Install dependencies
+      run: yarn install
+      shell: bash
+    - name: Build project
+      run: yarn build
+      shell: bash
+    # Enable once supported
+    # - name: Archive build artifacts
+    #   uses: actions/upload-artifact@v3
+    #   with:
+    #     name: build
+    #     path: ./build/libs/*.jar

@@ -1,0 +1,88 @@
+---
+on:
+  workflow_call:
+    inputs:
+      name:
+        required: true
+        description: Project name
+        type: string
+      version:
+        required: false
+        description: Project version
+        type: string
+      source_path:
+        required: false
+        type: string
+        description: Path of artifact to upload to S3. Defaults to the dist directory
+        default: dist
+      node-version:
+        required: true
+        type: string
+        description: Node version
+      has_docker_file:
+        required: false
+        type: boolean
+        description: If the release process includes a docker build
+        default: true
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
+      AWS_ARTIFACTS_BUCKET_NAME:
+        required: true
+      AWS_REGION:
+        required: true
+
+jobs:
+  Prepare:
+    environment: development
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo Prepare - placeholder
+  Validate:
+    environment: development
+    needs: Prepare
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: go-picky/picky-cicd/actions/yarn/validate@task/widget-workflow
+        with:
+          node-version: ${{ inputs.node-version }}
+  Build:
+    environment: development
+    needs: [Prepare, Validate]
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo Build Stage - placeholder
+  Release:
+    environment: development
+    needs: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: go-picky/picky-cicd/actions/git/get-version@main
+      - uses: go-picky/picky-cicd/actions/yarn/build@task/widget-workflow
+        with:
+          node-version: ${{ inputs.node-version }}
+      - name: Release artifact
+        if: ${{ inputs.has_docker_file }} == false
+        uses: go-picky/picky-cicd/actions/aws/s3/upload-file@task/widget-workflow
+        with:
+          name: ${{ inputs.name }}
+          version: ${{ inputs.version }}
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_bucket_name: ${{ secrets.AWS_ARTIFACTS_BUCKET_NAME }}
+          source_path: ${{ inputs.source_path }}
+          region: ${{ secrets.AWS_REGION }}
+          aws_bucket_dest_dir: /
+      - name: Release docker image
+        if: ${{ inputs.has_docker_file }}
+        uses: go-picky/picky-cicd/actions/docker/build-and-push@main
+        with:
+          name: ${{ inputs.name }}
+          version: ${{ env.RELEASE_VERSION }}
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          git_token: ${{ secrets.GIT_TOKEN }}

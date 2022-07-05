@@ -1,0 +1,76 @@
+---
+on:
+  workflow_call:
+    inputs:
+      name:
+        required: true
+        type: string
+      version:
+        required: false
+        type: string
+      job:
+        description: 'Job to run'
+        required: true
+        type: string
+      artifact_name:
+        required: true
+        type: string
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
+      AWS_ARTIFACTS_BUCKET_NAME:
+        required: true
+      AWS_DEPLOY_BUCKET_NAME:
+        required: true
+      AWS_REGION:
+        required: true
+
+jobs:
+  dev-deploy:
+    environment: development
+    runs-on: ubuntu-latest
+    if: ${{ inputs.job == 'dev-deploy'}}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: keithweaver/aws-s3-github-action@v1.0.0
+        with:
+          command: cp
+          source: s3://${{ secrets.AWS_ARTIFACTS_BUCKET_NAME}}/${{ inputs.artifact_name }}
+          destination: .
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_region: ${{ secrets.AWS_REGION }}
+      - run: ls -l
+      - uses: keithweaver/aws-s3-github-action@v1.0.0
+        with:
+          command: cp
+          source: ${{ inputs.artifact_name }}
+          destination: s3://${{ secrets.AWS_DEV_DEPLOY_BUCKET_NAME}}/widgets/js/${{ inputs.name }}
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_region: ${{ secrets.AWS_REGION }}
+  prod-deploy:
+    environment: production
+    runs-on: ubuntu-latest
+    if: ${{ inputs.job == 'prod-deploy'}}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: keithweaver/aws-s3-github-action@v1.0.0
+        with:
+          command: cp
+          source: s3://${{ secrets.AWS_ARTIFACTS_BUCKET_NAME}}/${{ inputs.artifact_name }}
+          destination: .
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_region: ${{ secrets.AWS_REGION }}
+      - run: ls -l
+      - uses: keithweaver/aws-s3-github-action@v1.0.0
+        with:
+          command: cp
+          source: ${{ inputs.artifact_name }}
+          destination: s3://${{ secrets.AWS_PRD_DEPLOY_BUCKET_NAME}}/widgets/js/${{ inputs.name }}
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_region: ${{ secrets.AWS_REGION }}
