@@ -45,7 +45,7 @@ runs:
     - name: Build, tag, and push image to Amazon ECR
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: ${{ inputs.name }} # remove '-test' once confirmed working
+        ECR_REPOSITORY: ${{ inputs.name }}-test # remove '-test' once confirmed working
         IMAGE_TAG: ${{ inputs.version || 'latest' }}
         GIT_TOKEN: ${{ inputs.git_token }}
       run: |
