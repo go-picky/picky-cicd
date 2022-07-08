@@ -1,0 +1,73 @@
+---
+on:
+  workflow_call:
+    inputs:
+      name:
+        required: true
+        type: string
+      version:
+        required: false
+        type: string
+      job:
+        description: 'Job to run'
+        required: true
+        type: string
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
+      AWS_ARTIFACTS_BUCKET_NAME:
+        required: true
+      AWS_REGION:
+        required: true
+
+jobs:
+  dev-deploy:
+    environment: development
+    runs-on: self-hosted
+    container:
+      image: hashicorp/terraform:latest@sha256:bab3667a19fb157750505765468dba6e1f4c06007cbb503c4e2a8ab0a02b813c
+    if: ${{ inputs.job == 'dev-deploy'}}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: go-picky/picky-cicd/actions/terraform/setup-config@task/add-terraform-workflow
+        with:
+          environment: development
+          aws_bucket_name: ${{ secrets.AWS_ARTIFACTS_BUCKET_NAME}}
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_region: ${{ secrets.AWS_REGION }}
+      - run: terraform init -backend-config="key=terraform.tfstate"
+      - run: |
+          terraform workspace select development || \
+          terraform workspace new development && terraform workspace select development
+      - run: |
+          terraform apply -auto-approve \
+            -var-file terraform.tfvars \
+            -var 'AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY_ID }}' \
+            -var 'AWS_SECRET_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}'
+  prod-deploy:
+    environment: production
+    runs-on: self-hosted
+    container:
+      image: hashicorp/terraform:latest@sha256:bab3667a19fb157750505765468dba6e1f4c06007cbb503c4e2a8ab0a02b813c
+    if: ${{ inputs.job == 'prod-deploy'}}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: go-picky/picky-cicd/actions/terraform/setup-config@task/add-terraform-workflow
+        with:
+          environment: production
+          aws_bucket_name: ${{ secrets.AWS_ARTIFACTS_BUCKET_NAME}}
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_region: ${{ secrets.AWS_REGION }}
+      - run: terraform init -backend-config="key=terraform.tfstate"
+      - run: |
+          terraform workspace select production || \
+          terraform workspace new production && terraform workspace select production
+      - run: |
+          terraform apply -auto-approve \
+            -var-file terraform.tfvars \
+            -var 'AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY_ID }}' \
+            -var 'AWS_SECRET_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}'

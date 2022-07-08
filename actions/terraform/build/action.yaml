@@ -1,0 +1,33 @@
+---
+name: 'Terraform Plan'
+description: 'Generate terraform plan files'
+
+inputs:
+  aws_access_key_id:
+    required: true
+    description: 'AWS access key ID'
+    type: string
+  aws_secret_access_key:
+    required: true
+    description: 'AWS secret access key'
+    type: string
+  environment:
+    required: true
+    description: 'environment name'
+    type: string
+    default: development
+
+runs:
+  using: 'composite'
+  steps:
+    - uses: actions/checkout@v3
+    - run: env
+      shell: bash
+    - run: terraform init
+      shell: bash
+    - run: |
+        terraform plan \
+          -var-file environments/${{ inputs.environment }}.tfvars \
+          -var 'AWS_ACCESS_KEY=${{ inputs.aws_access_key_id }}' \
+          -var 'AWS_SECRET_KEY=${{ inputs.aws_secret_access_key }}'
+      shell: bash

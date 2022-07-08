@@ -1,0 +1,36 @@
+---
+name: 'Terraform Setup Config'
+description: 'Setup Config'
+
+inputs:
+  environment:
+    required: true
+    description: 'environment'
+    type: string
+  aws_bucket_name:
+    required: true
+    description: 'AWS bucket name'
+    type: string
+  aws_access_key_id:
+    required: true
+    description: 'AWS access key ID'
+  aws_secret_access_key:
+    required: true
+    description: 'AWS secret access key'
+  aws_region:
+    required: true
+    description: 'Region where bucket is hosted'
+    type: string
+
+runs:
+  using: 'composite'
+  steps:
+    # TODO: fix single quote escaping in config files
+    - uses: keithweaver/aws-s3-github-action@v1.0.0
+      with:
+        command: cp
+        source: s3://${{ inputs.aws_bucket_name}}/environments/${{ inputs.environment }}/terraform.tfvars
+        destination: .
+        aws_access_key_id: ${{ inputs.aws_access_key_id }}
+        aws_secret_access_key: ${{ inputs.aws_secret_access_key }}
+        aws_region: ${{ inputs.aws_region }}
