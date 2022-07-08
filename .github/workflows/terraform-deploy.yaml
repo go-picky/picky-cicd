@@ -17,6 +17,10 @@ on:
         required: true
       AWS_SECRET_ACCESS_KEY:
         required: true
+      DEV_CONFIG_FILE:
+        required: true
+      PRD_CONFIG_FILE:
+        required: true
 
 jobs:
   dev-deploy:
@@ -27,6 +31,10 @@ jobs:
     if: ${{ inputs.job == 'dev-deploy'}}
     steps:
       - uses: actions/checkout@v3
+      - uses: go-picky/picky-cicd/actions/terraform/setup-config@task/add-terraform-workflow
+        with:
+          dev_config_file: ${{ secrets.DEV_CONFIG_FILE }}
+          prd_config_file: ${{ secrets.PRD_CONFIG_FILE }}
       - run: terraform init
       - run: |
           terraform apply \
@@ -41,6 +49,10 @@ jobs:
     if: ${{ inputs.job == 'prod-deploy'}}
     steps:
       - uses: actions/checkout@v3
+      - uses: go-picky/picky-cicd/actions/terraform/setup-config@task/add-terraform-workflow
+        with:
+          dev_config_file: ${{ secrets.DEV_CONFIG_FILE }}
+          prd_config_file: ${{ secrets.PRD_CONFIG_FILE }}
       - run: terraform init
       - run: |
           terraform apply \

@@ -1,0 +1,21 @@
+---
+name: 'Terraform Setup Config'
+description: 'Setup Config'
+
+inputs:
+  dev_config_file:
+    required: true
+    description: 'config file'
+    type: string
+  prd_config_file:
+    required: true
+    description: 'config file'
+    type: string
+
+runs:
+  using: 'composite'
+  steps:
+    - run: echo ${{ inputs.dev_config_file }} > environments/development.tfvars
+      shell: bash
+    - run: echo ${{ inputs.prd_config_file }} > environments/production.tfvars
+      shell: bash
