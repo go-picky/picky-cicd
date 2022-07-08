@@ -1,0 +1,10 @@
+---
+name: 'Terraform Validate'
+description: 'Run validation on project'
+
+runs:
+  using: 'composite'
+  steps:
+    - uses: actions/checkout@v3
+    - name: terraform validate
+      uses: dflook/terraform-validate@v1

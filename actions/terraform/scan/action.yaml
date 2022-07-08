@@ -1,0 +1,26 @@
+---
+name: 'Terraform Scan'
+description: 'Run static code analysis on the project'
+
+runs:
+  using: 'composite'
+  steps:
+    - uses: actions/checkout@v3
+    - name: Run Checkov action
+      id: checkov
+      uses: bridgecrewio/checkov-action@master
+      with:
+        quiet: true
+        framework: terraform
+        soft_fail: true
+        output_format: junitxml
+        download_external_modules: true
+        log_level: DEBUG
+    - run: echo $CHECKOV_RESULTS > report.xml
+      shell: bash
+    - name: Test Report
+      uses: dorny/test-reporter@v1
+      with:
+        name: Scanning Report
+        path: report.xml
+        reporter: java-junit

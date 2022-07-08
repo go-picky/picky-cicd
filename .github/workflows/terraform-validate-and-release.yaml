@@ -1,0 +1,22 @@
+---
+on:
+  workflow_call:
+
+jobs:
+  Prepare:
+    environment: development
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo Prepare - placeholder
+  Validate:
+    environment: development
+    needs: Prepare
+    runs-on: ubuntu-latest
+    steps:
+      - uses: go-picky/picky-cicd/actions/terraform/validate@task/add-terraform-workflow
+  Scan:
+    environment: development
+    needs: Validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: go-picky/picky-cicd/actions/terraform/scan@task/add-terraform-workflow

@@ -1,0 +1,49 @@
+---
+on:
+  workflow_call:
+    inputs:
+      name:
+        required: true
+        type: string
+      version:
+        required: false
+        type: string
+      job:
+        description: 'Job to run'
+        required: true
+        type: string
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
+
+jobs:
+  dev-deploy:
+    environment: development
+    runs-on: ubuntu-latest
+    container:
+      image: hashicorp/terraform:latest@sha256:bab3667a19fb157750505765468dba6e1f4c06007cbb503c4e2a8ab0a02b813c
+    if: ${{ inputs.job == 'dev-deploy'}}
+    steps:
+      - uses: actions/checkout@v3
+      - run: terraform init
+      - run: |
+          terraform apply \
+            -var-file environments/development.tfvars \
+            -var 'AWS_ACCESS_KEY=${{ inputs.aws_access_key_id }}' \
+            -var 'AWS_SECRET_KEY=${{ inputs.aws_secret_access_key }}'
+  prod-deploy:
+    environment: production
+    runs-on: ubuntu-latest
+    container:
+      image: hashicorp/terraform:latest@sha256:bab3667a19fb157750505765468dba6e1f4c06007cbb503c4e2a8ab0a02b813c
+    if: ${{ inputs.job == 'prod-deploy'}}
+    steps:
+      - uses: actions/checkout@v3
+      - run: terraform init
+      - run: |
+          terraform apply \
+            -var-file environments/production.tfvars \
+            -var 'AWS_ACCESS_KEY=${{ inputs.aws_access_key_id }}' \
+            -var 'AWS_SECRET_KEY=${{ inputs.aws_secret_access_key }}'
