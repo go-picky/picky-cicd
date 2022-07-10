@@ -17,7 +17,8 @@ runs:
   steps:
     - run: mkdir environments
       shell: sh
-    - run: echo "${{ inputs.dev_config_file }}" > environments/development.tfvars
+    # TODO: fix single quote escaping in config files
+    - run: echo '${{ inputs.dev_config_file }}' > environments/development.tfvars
       shell: sh
-    - run: echo "${{ inputs.prd_config_file }}" > environments/production.tfvars
+    - run: echo '${{ inputs.prd_config_file }}' > environments/production.tfvars
       shell: sh
