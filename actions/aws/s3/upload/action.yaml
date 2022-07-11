@@ -1,0 +1,73 @@
+---
+name: 'Upload to S3'
+description: 'Upload a file / directory to an S3 bucket'
+inputs:
+  name:
+    required: true
+    description: 'Filename'
+    type: string
+  version:
+    required: false
+    description: 'Version'
+    type: string
+    default: latest
+  aws_access_key_id:
+    required: true
+    description: 'AWS access key ID'
+    type: string
+  aws_secret_access_key:
+    required: true
+    description: 'AWS secret access key'
+    type: string
+  aws_bucket_name:
+    required: true
+    description: 'AWS bucket name'
+    type: string
+  source_path:
+    required: true
+    description: 'Path to file / directory to upload'
+    type: string
+  region:
+    required: true
+    description: 'Region where bucket is hosted'
+    type: string
+  aws_bucket_dest_dir:
+    required: true
+    description: 'Destination directory of bucket'
+    type: string
+
+runs:
+  using: 'composite'
+  steps:
+    # - name: Download a single artifact
+    #   uses: actions/download-artifact@v3
+    #   with:
+    #     name: build
+    #     path: ./output
+    # - name: Compress artifact
+    #   run: tar -czvf ${{ inputs.name }}_${{ env.RELEASE_VERSION }}.tar.gz ${{ inputs.source_path }}
+    #   shell: bash
+    - uses: jakejarvis/s3-sync-action@master
+      with:
+        args: --acl public-read --follow-symlinks --delete
+      env:
+        AWS_S3_BUCKET: ${{ inputs.aws_bucket_name }}
+        AWS_ACCESS_KEY_ID: ${{ inputs.aws_access_key_id }}
+        AWS_SECRET_ACCESS_KEY: ${{ inputs.aws_secret_access_key }}
+        AWS_REGION: ${{ inputs.region }}
+        SOURCE_DIR: ${{ inputs.source_path }}      # optional: defaults to entire repository
+        DEST_DIR: ${{ inputs.aws_bucket_dest_dir }}
+    # - uses: hkusu/s3-upload-action@v2
+    #   id: upload
+    #   with:
+    #     aws-access-key-id: ${{ inputs.aws_access_key_id }}
+    #     aws-secret-access-key: ${{ inputs.aws_secret_access_key }}
+    #     aws-region: ${{ inputs.region }}
+    #     aws-bucket: ${{ inputs.aws_bucket_name }}
+    #     file-path: ${{ inputs.name }}_${{ env.RELEASE_VERSION }}.tar.gz
+    #     destination-dir: ${{ inputs.aws_bucket_dest_dir }}
+    #     bucket-root: /
+    #     output-file-url: 'true'
+    # - name: Show URL
+    #   run: echo '${{ steps.upload.outputs.file-url }}'
+    #   shell: bash
