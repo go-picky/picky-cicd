@@ -13,6 +13,16 @@ on:
         required: true
         type: string
       artifact_name:
+        description: 'Name of artifact to pull from S3'
+        required: true
+        type: string
+      unzip:
+        description: 'Unzip artifact for deployment'
+        required: false
+        type: string
+        default: false
+      destination:
+        description: 'Destination to deploy artifact'
         required: true
         type: string
     secrets:
