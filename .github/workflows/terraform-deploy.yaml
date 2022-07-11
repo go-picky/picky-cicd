@@ -36,6 +36,14 @@ jobs:
           dev_config_file: ${{ secrets.DEV_CONFIG_FILE }}
           prd_config_file: ${{ secrets.PRD_CONFIG_FILE }}
       - run: terraform init
+      # TODO: add auto-approve once confirmed
+      # - run: |
+      #     terraform apply -auto-approve \
+      #       -var-file environments/development.tfvars \
+      #       -var 'AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY_ID }}' \
+      #       -var 'AWS_SECRET_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}'
+
+      # TODO: remove interactive apply once confirmed
       - run: |
           terraform apply \
             -var-file environments/development.tfvars \
