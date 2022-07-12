@@ -22,7 +22,9 @@ on:
         required: true
       AWS_ARTIFACTS_BUCKET_NAME:
         required: true
-      AWS_DEPLOY_BUCKET_NAME:
+      AWS_DEV_DEPLOY_BUCKET_NAME:
+        required: true
+      AWS_PRD_DEPLOY_BUCKET_NAME:
         required: true
       AWS_REGION:
         required: true
@@ -60,7 +62,7 @@ jobs:
       - uses: keithweaver/aws-s3-github-action@v1.0.0
         with:
           command: cp
-          source: s3://${{ secrets.AWS_ARTIFACTS_BUCKET_NAME}}/${{ inputs.artifact_name }}
+          source: s3://${{ secrets.AWS_DEV_DEPLOY_BUCKET_NAME}}/${{ inputs.artifact_name }}
           destination: .
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
