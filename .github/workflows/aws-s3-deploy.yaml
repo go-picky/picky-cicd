@@ -15,6 +15,11 @@ on:
       artifact_name:
         required: true
         type: string
+      is_public:
+        required: false
+        type: boolean
+        default: false
+        
     secrets:
       AWS_ACCESS_KEY_ID:
         required: true
@@ -44,8 +49,9 @@ jobs:
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_region: ${{ secrets.AWS_REGION }}
-      - run: ls -l
       - uses: keithweaver/aws-s3-github-action@v1.0.0
+        env:
+          FLAGS: ${{ inputs.is_public || --acl public-read }}
         with:
           command: cp
           source: ${{ inputs.artifact_name }}
@@ -53,7 +59,7 @@ jobs:
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_region: ${{ secrets.AWS_REGION }}
-          flags: --acl public-read
+          flags: ${{ env.FLAGS }}
       # - uses: hkusu/s3-upload-action@v2
       #   id: upload # specify some ID for use in subsequent steps
       #   with:
@@ -77,8 +83,9 @@ jobs:
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_region: ${{ secrets.AWS_REGION }}
-      - run: ls -l
       - uses: keithweaver/aws-s3-github-action@v1.0.0
+        env:
+          FLAGS: ${{ inputs.is_public || --acl public-read }}
         with:
           command: cp
           source: ${{ inputs.artifact_name }}
@@ -86,4 +93,4 @@ jobs:
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_region: ${{ secrets.AWS_REGION }}
-          flags: --acl public-read
+          flags: ${{ env.FLAGS }}
