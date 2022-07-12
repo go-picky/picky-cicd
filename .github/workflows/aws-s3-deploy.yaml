@@ -53,6 +53,16 @@ jobs:
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_region: ${{ secrets.AWS_REGION }}
+          flags: --acl public-read
+      # - uses: hkusu/s3-upload-action@v2
+      #   id: upload # specify some ID for use in subsequent steps
+      #   with:
+      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #     aws-region: 'ap-northeast-1'
+      #     aws-bucket: ${{ secrets.AWS_BUCKET }}
+      #     file-path: './myfile.txt'
+      #     output-file-url: 'true' # specify true
   prod-deploy:
     environment: production
     runs-on: ubuntu-latest
@@ -76,3 +86,4 @@ jobs:
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_region: ${{ secrets.AWS_REGION }}
+          flags: --acl public-read
