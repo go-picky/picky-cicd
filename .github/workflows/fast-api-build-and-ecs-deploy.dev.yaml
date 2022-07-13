@@ -16,7 +16,7 @@ on:
 
 jobs:
   Prepare:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     outputs:
       token: ${{ steps.fetch-token.outputs.TOKEN }}
     steps:
@@ -28,7 +28,7 @@ jobs:
           aws_domain: ${{ secrets.AWS_DOMAIN }}
   Validate:
     needs: Prepare
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     env:
       TOKEN: ${{ needs.Prepare.outputs.token }}
     steps:
@@ -40,12 +40,12 @@ jobs:
           python-version: ${{ inputs.python-version }}
   Build:
     needs: [Prepare, Validate]
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - run: echo Build Stage - placeholder
   Release:
     needs: Build
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - uses: actions/checkout@v3
       - uses: go-picky/picky-cicd/actions/git/get-version@main
@@ -62,7 +62,7 @@ jobs:
           git_token: ${{ secrets.GIT_TOKEN }}
   Deploy:
     needs: Release
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - uses: actions/checkout@v3
       - uses: go-picky/picky-cicd/actions/aws/deploy@main

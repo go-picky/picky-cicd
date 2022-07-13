@@ -40,7 +40,7 @@ on:
 jobs:
   dev-deploy:
     environment: development
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     if: ${{ inputs.job == 'dev-deploy'}}
     steps:
       - uses: actions/checkout@v3
@@ -70,7 +70,7 @@ jobs:
           flags: --acl public-read
   prod-deploy:
     environment: production
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     if: ${{ inputs.job == 'prod-deploy'}}
     steps:
       - uses: actions/checkout@v3

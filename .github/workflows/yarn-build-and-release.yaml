@@ -37,13 +37,13 @@ on:
 jobs:
   Prepare:
     environment: development
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - run: echo Prepare - placeholder
   Validate:
     environment: development
     needs: Prepare
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - uses: actions/checkout@v3
       - uses: go-picky/picky-cicd/actions/yarn/validate@main
@@ -52,13 +52,13 @@ jobs:
   Build:
     environment: development
     needs: [Prepare, Validate]
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - run: echo Build Stage - placeholder
   Release:
     environment: development
     needs: Build
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - uses: actions/checkout@v3
       - uses: go-picky/picky-cicd/actions/git/get-version@main

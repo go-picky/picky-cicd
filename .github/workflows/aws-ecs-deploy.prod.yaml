@@ -4,7 +4,7 @@ name: My First Manual Workflow
 on: [workflow_dispatch]
 jobs:
   Prepare:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - uses: aws-actions/configure-aws-credentials@v1
         with:
