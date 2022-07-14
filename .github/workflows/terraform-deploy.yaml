@@ -31,7 +31,7 @@ jobs:
     if: ${{ inputs.job == 'dev-deploy'}}
     steps:
       - uses: actions/checkout@v3
-      - uses: go-picky/picky-cicd/actions/terraform/setup-config@task/add-terraform-workflow
+      - uses: go-picky/picky-cicd/actions/terraform/setup-config@main
         with:
           environment: development
           aws_bucket_name: ${{ secrets.AWS_ARTIFACTS_BUCKET_NAME}}
@@ -55,7 +55,7 @@ jobs:
     if: ${{ inputs.job == 'prod-deploy'}}
     steps:
       - uses: actions/checkout@v3
-      - uses: go-picky/picky-cicd/actions/terraform/setup-config@task/add-terraform-workflow
+      - uses: go-picky/picky-cicd/actions/terraform/setup-config@main
         with:
           environment: production
           aws_bucket_name: ${{ secrets.AWS_ARTIFACTS_BUCKET_NAME}}
