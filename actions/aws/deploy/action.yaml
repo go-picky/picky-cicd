@@ -19,6 +19,9 @@ inputs:
   cluster_arn:
     required: true
     description: 'ARN of the AWS ECS cluster'
+  aws_region:
+    required: true
+    description: 'region of deploy'
 
 runs:
   using: 'composite'
@@ -29,7 +32,7 @@ runs:
       with:
         aws-access-key-id: ${{ inputs.aws_access_key_id }}
         aws-secret-access-key: ${{ inputs.aws_secret_access_key }}
-        aws-region: ap-southeast-1
+        aws-region: ${{ inputs.aws_region }}
     # - name: Create service if not exists
     #   env:
     #     ENV: development
@@ -39,8 +42,9 @@ runs:
     #       --cluster ${{ inputs.cluster_arn }} \
     #       --service-name ${{ inputs.name }} \
     #       --desired-count 1 \
-    #       --launch-type FARGATE
-    #       --task-definition ${{ inputs.name }}-task-def-test
+    #       --launch-type FARGATE \
+    #       --task-definition ${{ inputs.name }}-task-def-test \
+    #       --network-configuration "awsvpcConfiguration={subnets=[subnet-12344321],securityGroups=[sg-12344321],assignPublicIp=DISABLED}"
       # shell: bash
     - name: Register task definitions if different
       env:
