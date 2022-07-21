@@ -40,7 +40,7 @@ runs:
 # read properties
     - run: cat ${{ inputs.basepath }}/${{ inputs.environment }}/properties.txt >> $GITHUB_ENV
       shell: bash
-    - run: echo CLUSTER_ARN=aws ecs list-clusters --output text --query 'clusterArns[?contains(@, `development`)]' >> $GITHUB_ENV
+    - run: echo CLUSTER_ARN=$(aws ecs list-clusters --output text --query 'clusterArns[?contains(@, `development`)]') >> $GITHUB_ENV
       shell: bash
     - run: env
       shell: bash
