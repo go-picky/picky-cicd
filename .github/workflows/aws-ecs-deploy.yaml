@@ -36,7 +36,7 @@ jobs:
     if: ${{ inputs.job == 'dev-deploy'}}
     steps:
       - uses: actions/checkout@v3
-      - uses: go-picky/picky-cicd/actions/aws/deploy@main
+      - uses: go-picky/picky-cicd/actions/aws/deploy@task/refactor-ecs-deploy
         with:
           basepath: ${{ matrix.app }}
           name: ${{ inputs.name }}
@@ -52,7 +52,7 @@ jobs:
     if: ${{ inputs.job == 'prod-deploy'}}
     steps:
       - uses: actions/checkout@v3
-      - uses: go-picky/picky-cicd/actions/aws/deploy@main
+      - uses: go-picky/picky-cicd/actions/aws/deploy@task/refactor-ecs-deploy
         with:
           basepath: ${{ inputs.basepath }}
           name: ${{ inputs.name }}
