@@ -41,8 +41,10 @@ runs:
         aws-region: ${{ inputs.aws_region }}
 
 # read properties
-    - run: export $(cat ${{ inputs.basepath }}/${{ inputs.environment }}/properties.txt | xargs)
+    - run: echo $(cat ${{ inputs.basepath }}/${{ inputs.environment }}/properties.txt | xargs) >> $GITHUB_ENV
       shell: bash
+    - run: echo CLUSTER_ARN=aws ecs list-clusters --output text --query 'clusterArns[?contains(@, `development`)]' >> $GITHUB_ENV
+    - run: env
 # inject properties into template
     - run: |
           PROCESSED=$(eval "cat 2> /dev/null <<EOF
@@ -59,5 +61,5 @@ runs:
     #   run: aws ecs register-task-definition --cli-input-yaml file://templates/task-definition.yaml
     #   shell: bash
     # - name: Update service
-    #   run: aws ecs update-service --cluster ${{ inputs.cluster_arn }} --service ${{ inputs.name }} --task-definition ${{ inputs.name }}
+    #   run: aws ecs update-service --cluster ${{ CLUSTER_ARN }} --service ${{ inputs.name }} --task-definition ${{ inputs.name }}
     #   shell: bash
