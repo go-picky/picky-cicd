@@ -12,8 +12,12 @@ on:
         description: 'Job to run'
         required: true
         type: string
-      basepath:
-        description: 'directory of application to be deployed'
+      # basepath:
+      #   description: 'directory of application to be deployed'
+      #   required: true
+      #   type: string
+      matrix:
+        description: 'matrix of applications to deploy'
         required: true
         type: string
     secrets:
@@ -31,12 +35,14 @@ on:
 jobs:
   dev-deploy:
     runs-on: self-hosted
+    strategy:
+      matrix: ${{ fromJson(inputs.matrix) }}
     if: ${{ inputs.job == 'dev-deploy'}}
     steps:
       - uses: actions/checkout@v3
       - uses: go-picky/picky-cicd/actions/aws/deploy@main
         with:
-          basepath: ${{ inputs.basepath }}
+          basepath: ${{ matrix.app }}
           name: ${{ inputs.name }}
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -46,6 +52,8 @@ jobs:
 
   prod-deploy:
     runs-on: self-hosted
+    strategy:
+      matrix: ${{fromJson(needs.prepare.outputs.matrix)}}
     if: ${{ inputs.job == 'prod-deploy'}}
     steps:
       - uses: actions/checkout@v3
