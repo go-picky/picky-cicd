@@ -1,7 +1,11 @@
 ---
-name: 'AWS deploy'
+name: 'AWS ECS deploy'
 description: 'Deploy the application onto AWS ECS'
 inputs:
+  basepath:
+    required: true
+    description: 'Directory of application to be deployed'
+    type: string
   name:
     required: true
     description: 'Name of the project which will be used to reference and name the output artifact'
@@ -22,6 +26,8 @@ inputs:
   aws_region:
     required: true
     description: 'region of deploy'
+  environment:
+    required: true
 
 runs:
   using: 'composite'
@@ -33,26 +39,25 @@ runs:
         aws-access-key-id: ${{ inputs.aws_access_key_id }}
         aws-secret-access-key: ${{ inputs.aws_secret_access_key }}
         aws-region: ${{ inputs.aws_region }}
-    # - name: Create service if not exists
-    #   env:
-    #     ENV: development
-    #   run: |
-    #     aws ecs describe-services --cluster ${{ inputs.cluster_arn }} --services ${{ inputs.name }} | grep ACTIVE || \
-    #     aws ecs create-service \
-    #       --cluster ${{ inputs.cluster_arn }} \
-    #       --service-name ${{ inputs.name }} \
-    #       --desired-count 1 \
-    #       --launch-type FARGATE \
-    #       --task-definition ${{ inputs.name }}-task-def-test \
-    #       --network-configuration "awsvpcConfiguration={subnets=[subnet-12344321],securityGroups=[sg-12344321],assignPublicIp=DISABLED}"
-      # shell: bash
-    - name: Register task definitions if different
-      env:
-        ENV: development
-      run: aws ecs register-task-definition --cli-input-yaml file://ecs/$ENV-task-def.yaml
+
+# read properties
+    - run: export $(cat ${{ inputs.basepath }}/${{ inputs.environment }}/properties.txt | xargs)
       shell: bash
-    - name: Update service
-      env:
-        ENV: development
-      run: aws ecs update-service --cluster ${{ inputs.cluster_arn }} --service ${{ inputs.name }} --task-definition ${{ inputs.name }}-task-def
+# inject properties into template
+    - run: |
+          PROCESSED=$(eval "cat 2> /dev/null <<EOF
+          $(<templates/task-definition.yaml)
+          EOF
+          ")
+          echo $PROCESSED
+# register task definition
+          # aws ecs register-task-definition --cli-input-yaml $PROCESSED
       shell: bash
+
+
+    # - name: Register task definitions (if different)
+    #   run: aws ecs register-task-definition --cli-input-yaml file://templates/task-definition.yaml
+    #   shell: bash
+    # - name: Update service
+    #   run: aws ecs update-service --cluster ${{ inputs.cluster_arn }} --service ${{ inputs.name }} --task-definition ${{ inputs.name }}
+    #   shell: bash

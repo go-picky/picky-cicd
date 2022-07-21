@@ -12,6 +12,10 @@ on:
         description: 'Job to run'
         required: true
         type: string
+      basepath:
+        description: 'directory of application to be deployed'
+        required: true
+        type: string
     secrets:
       AWS_ACCESS_KEY_ID:
         required: true
@@ -26,29 +30,31 @@ on:
 
 jobs:
   dev-deploy:
-    environment: development
     runs-on: self-hosted
     if: ${{ inputs.job == 'dev-deploy'}}
     steps:
       - uses: actions/checkout@v3
       - uses: go-picky/picky-cicd/actions/aws/deploy@main
         with:
+          basepath: ${{ inputs.basepath }}
           name: ${{ inputs.name }}
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_region: ${{ secrets.AWS_REGION }}
-          cluster_arn: ${{ secrets.DEV_CLUSTER_ARN }}
+          cluster_arn: ${{ secrets.CLUSTER_ARN }}
+          environment: development
 
   prod-deploy:
-    environment: production
     runs-on: self-hosted
     if: ${{ inputs.job == 'prod-deploy'}}
     steps:
       - uses: actions/checkout@v3
       - uses: go-picky/picky-cicd/actions/aws/deploy@main
         with:
+          basepath: ${{ inputs.basepath }}
           name: ${{ inputs.name }}
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_region: ${{ secrets.AWS_REGION }}
-          cluster_arn: ${{ secrets.PRD_CLUSTER_ARN }}
+          cluster_arn: ${{ secrets.CLUSTER_ARN }}
+          environment: production
