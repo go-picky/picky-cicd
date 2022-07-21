@@ -41,7 +41,9 @@ runs:
     - run: echo $(cat ${{ inputs.basepath }}/${{ inputs.environment }}/properties.txt | xargs) >> $GITHUB_ENV
       shell: bash
     - run: echo CLUSTER_ARN=aws ecs list-clusters --output text --query 'clusterArns[?contains(@, `development`)]' >> $GITHUB_ENV
+      shell: bash
     - run: env
+      shell: bash
 # inject properties into template
     - run: |
           PROCESSED=$(eval "cat 2> /dev/null <<EOF
