@@ -20,9 +20,6 @@ inputs:
   aws_secret_access_key:
     required: true
     description: 'AWS secret access key'
-  cluster_arn:
-    required: true
-    description: 'ARN of the AWS ECS cluster'
   aws_region:
     required: true
     description: 'region of deploy'
