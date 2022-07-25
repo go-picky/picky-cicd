@@ -31,8 +31,6 @@ on:
 jobs:
   dev-deploy:
     runs-on: self-hosted
-    container:
-      image: amazon/aws-cli:2.7.17
     strategy:
       matrix: ${{ fromJson(inputs.matrix) }}
     if: ${{ inputs.job == 'dev-deploy'}}
