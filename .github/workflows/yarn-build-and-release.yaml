@@ -67,7 +67,7 @@ jobs:
           node-version: ${{ inputs.node-version }}
       - name: Release artifact
         if: ${{ inputs.has_docker_file }} == false
-        uses: go-picky/picky-cicd/actions/aws/s3/upload-file@main
+        uses: go-picky/picky-cicd/actions/aws/s3/upload@main
         with:
           name: ${{ inputs.name }}
           version: ${{ inputs.version }}
