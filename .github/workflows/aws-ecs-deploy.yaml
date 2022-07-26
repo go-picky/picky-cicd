@@ -19,7 +19,9 @@ on:
         required: true
       AWS_REGION:
         required: true
-      CLUSTER_ARN:
+      DEV_CLUSTER_ARN:
+        required: true
+      PRD_CLUSTER_ARN:
         required: true
 
 jobs:
@@ -35,7 +37,7 @@ jobs:
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_region: ${{ secrets.AWS_REGION }}
-          cluster_arn: ${{ secrets.CLUSTER_ARN }}
+          cluster_arn: ${{ secrets.DEV_CLUSTER_ARN }}
 
   prod-deploy:
     environment: production
@@ -49,4 +51,4 @@ jobs:
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws_region: ${{ secrets.AWS_REGION }}
-          cluster_arn: ${{ secrets.CLUSTER_ARN }}
+          cluster_arn: ${{ secrets.PRD_CLUSTER_ARN }}
