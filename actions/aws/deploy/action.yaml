@@ -29,8 +29,6 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - run: echo starting deploy
-      shell: bash
     - uses: actions/checkout@v3
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
@@ -46,6 +44,11 @@ runs:
       shell: bash
     - run: echo CLUSTER_ARN=$(aws ecs list-clusters --output text --query 'clusterArns[?contains(@, `development`)]') >> $GITHUB_ENV
       shell: bash
+    # uncomment when ready to deploy to production
+    # - run: aws ecs list-clusters --output text --query 'clusterArns[?contains(@, `${{ inputs.environment }}`)]'
+    #   shell: bash
+    # - run: echo CLUSTER_ARN=$(aws ecs list-clusters --output text --query 'clusterArns[?contains(@, `${{ inputs.environment }}`)]') >> $GITHUB_ENV
+    #   shell: bash
     - run: env
       shell: bash
 # inject properties into template
@@ -56,7 +59,9 @@ runs:
           ")
           echo $PROCESSED
 # register task definition
-          # aws ecs register-task-definition --cli-input-yaml $PROCESSED
+          aws ecs register-task-definition --cli-input-yaml $PROCESSED
+      shell: bash
+    - run: aws ecs update-service --cluster ${{ CLUSTER_ARN }} --service ${{ inputs.name }} --task-definition ${{ inputs.name }}
       shell: bash
 
 
