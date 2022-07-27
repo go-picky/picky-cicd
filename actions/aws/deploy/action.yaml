@@ -60,6 +60,6 @@ runs:
         echo "$PROCESSED"
         aws ecs register-task-definition --cli-input-yaml "$PROCESSED"
       shell: bash
-    - run: aws ecs update-service --cluster ${{ CLUSTER_ARN }} --service ${{ inputs.name }} --task-definition ${{ inputs.name }}
+    - run: aws ecs update-service --cluster $CLUSTER_ARN --service ${{ inputs.name }} --task-definition ${{ inputs.name }}
       shell: bash
     #   shell: bash
