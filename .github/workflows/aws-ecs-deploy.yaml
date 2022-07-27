@@ -12,10 +12,6 @@ on:
         description: 'Job to run'
         required: true
         type: string
-      # basepath:
-      #   description: 'directory of application to be deployed'
-      #   required: true
-      #   type: string
       matrix:
         description: 'matrix of applications to deploy'
         required: true
@@ -54,7 +50,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: go-picky/picky-cicd/actions/aws/deploy@task/refactor-ecs-deploy
         with:
-          basepath: ${{ inputs.basepath }}
+          basepath: ${{ matrix.app }}
           name: ${{ inputs.name }}
           aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
