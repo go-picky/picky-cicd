@@ -54,5 +54,5 @@ runs:
     - name: Update service
       env:
         ENV: development
-      run: aws ecs update-service --cluster ${{ inputs.cluster_arn }} --service ${{ inputs.name }}-service --task-definition ${{ inputs.name }}-task-def
+      run: aws ecs update-service --cluster ${{ inputs.cluster_arn }} --service ${{ inputs.name }} --task-definition ${{ inputs.name }}-task-def
       shell: bash
