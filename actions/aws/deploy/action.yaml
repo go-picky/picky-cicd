@@ -57,7 +57,7 @@ runs:
         $(<templates/task-definition.yaml)
         EOF
         ")
-        echo $PROCESSED
+        echo "$PROCESSED"
 # aws ecs register-task-definition --cli-input-yaml $PROCESSED
       shell: bash
     # - name: Update service
