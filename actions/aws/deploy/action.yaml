@@ -53,13 +53,12 @@ runs:
     - env:
         AWS_REGION: ${{ inputs.aws_region }}
       run: |
-          PROCESSED=$(eval "cat 2> /dev/null <<EOF
-          $(<templates/task-definition.yaml)
-          EOF
-          ")
-# register task definition
-          echo $PROCESSED
-          # aws ecs register-task-definition --cli-input-yaml $PROCESSED
+        PROCESSED=$(eval "cat 2> /dev/null <<EOF
+        $(<templates/task-definition.yaml)
+        EOF
+        ")
+        echo $PROCESSED
+# aws ecs register-task-definition --cli-input-yaml $PROCESSED
       shell: bash
     # - name: Update service
     #   env:
