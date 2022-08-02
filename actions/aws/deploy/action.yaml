@@ -52,6 +52,7 @@ runs:
 # inject properties into template
     - env:
         AWS_REGION: ${{ inputs.aws_region }}
+        ENVIRONMENT: ${{ inputs.environment }}
       run: |
         PROCESSED=$(eval "cat 2> /dev/null <<EOF
         $(<templates/task-definition.yaml)
